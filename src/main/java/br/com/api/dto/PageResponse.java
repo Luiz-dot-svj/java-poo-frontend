@@ -1,0 +1,11 @@
+package br.com.api.dto;
+
+import java.util.List;
+
+public record PageResponse<T>(
+    List<T> content,
+    int totalPages,
+    long totalElements,
+    int size,
+    int number
+) {}
