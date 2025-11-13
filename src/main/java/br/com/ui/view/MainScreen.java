@@ -30,23 +30,42 @@ public class MainScreen extends JFrame {
 
         // Navigation
         JPanel navPanel = createNavPanel();
-        contentPane.add(navPanel, BorderLayout.WEST);
+        contentPane.add(navPanel, BorderLayout.CENTER);
 
         // Main Content
         JPanel mainContentPanel = createMainContentPanel();
-        contentPane.add(mainContentPanel, BorderLayout.CENTER);
+        contentPane.add(mainContentPanel, BorderLayout.SOUTH);
     }
 
     private JPanel createHeader() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
-        headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        headerPanel.setPreferredSize(new Dimension(getWidth(), 80));
 
-        JLabel titleLabel = new JLabel("Painel de Gerenciamento");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        // Painel para logo e slogan
+        JPanel logoSloganPanel = new JPanel();
+        logoSloganPanel.setLayout(new BoxLayout(logoSloganPanel, BoxLayout.Y_AXIS));
+        logoSloganPanel.setOpaque(false);
+        logoSloganPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoSloganPanel.add(logoLabel);
+
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        logoSloganPanel.add(sloganLabel);
+
+        headerPanel.add(logoSloganPanel, BorderLayout.WEST);
+
+        // Título centralizado
+        JLabel titleLabel = new JLabel("Painel Principal");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(ColorPalette.TEXT);
-        titleLabel.setBorder(new EmptyBorder(0, 20, 0, 0));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
 
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -75,13 +94,11 @@ public class MainScreen extends JFrame {
     }
 
     private JPanel createNavPanel() {
-        JPanel navPanel = new JPanel();
-        navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         navPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
-        navPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, ColorPalette.BORDER_COLOR));
-        navPanel.setPreferredSize(new Dimension(220, getHeight()));
+        navPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
+        navPanel.setPreferredSize(new Dimension(getWidth(), 60));
 
-        navPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         addNavButton(navPanel, "Produtos", () -> new ProdutoScreen().setVisible(true));
         addNavButton(navPanel, "Clientes", () -> new PessoaScreen().setVisible(true));
         addNavButton(navPanel, "Estoque", () -> new EstoqueScreen().setVisible(true));
@@ -89,7 +106,6 @@ public class MainScreen extends JFrame {
         addNavButton(navPanel, "Custos", () -> new CustoScreen().setVisible(true));
         addNavButton(navPanel, "Preços", () -> new PrecoScreen().setVisible(true));
         addNavButton(navPanel, "Acesso", () -> new GerenciamentoAcessoScreen().setVisible(true));
-        navPanel.add(Box.createVerticalGlue());
 
         return navPanel;
     }
@@ -98,8 +114,8 @@ public class MainScreen extends JFrame {
         JPanel mainContentPanel = new JPanel(new BorderLayout());
         mainContentPanel.setBackground(ColorPalette.BACKGROUND);
         mainContentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        JLabel welcomeLabel = new JLabel("Bem-vindo! Selecione uma opção no menu para começar.", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        JLabel welcomeLabel = new JLabel(String.format("Bem-vindo, %s, escolha uma opção para prosseguir", loggedInUsername), SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22));
         welcomeLabel.setForeground(ColorPalette.TEXT_MUTED);
         mainContentPanel.add(welcomeLabel, BorderLayout.CENTER);
         return mainContentPanel;
@@ -108,14 +124,11 @@ public class MainScreen extends JFrame {
     private void addNavButton(JPanel panel, String text, Runnable action) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setFocusPainted(false);
         button.setBackground(ColorPalette.PANEL_BACKGROUND);
         button.setForeground(ColorPalette.TEXT);
         button.setBorder(new EmptyBorder(10, 20, 10, 20));
-        button.setHorizontalAlignment(SwingConstants.LEFT);
 
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
@@ -131,17 +144,5 @@ public class MainScreen extends JFrame {
 
         button.addActionListener(e -> action.run());
         panel.add(button);
-        panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(new FlatLightLaf());
-            } catch (UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
-            }
-            new MainScreen("Admin").setVisible(true);
-        });
     }
 }

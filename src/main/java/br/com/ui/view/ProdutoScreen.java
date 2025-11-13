@@ -304,15 +304,4 @@ public class ProdutoScreen extends JFrame {
 
         return button;
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(new FlatLightLaf());
-            } catch (UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
-            }
-            new ProdutoScreen().setVisible(true);
-        });
-    }
 }

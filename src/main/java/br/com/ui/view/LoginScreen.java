@@ -18,6 +18,7 @@ public class LoginScreen extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
+    private JButton createAccountButton;
     private final AuthService authService;
 
     public LoginScreen() {
@@ -28,20 +29,42 @@ public class LoginScreen extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-        
+
         Container contentPane = getContentPane();
         contentPane.setBackground(ColorPalette.BACKGROUND);
         contentPane.setLayout(new BorderLayout());
 
-        // Header com o título
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        headerPanel.setBackground(ColorPalette.BACKGROUND);
-        headerPanel.setBorder(new EmptyBorder(40, 20, 20, 20));
-        JLabel titleLabel = new JLabel("Bem-vindo de volta!");
+        // Painel superior com logo, slogan e título
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.setBackground(ColorPalette.BACKGROUND);
+        topPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        // Logo
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        topPanel.add(logoLabel);
+
+        // Slogan
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        sloganLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        topPanel.add(sloganLabel);
+
+        // Espaçamento
+        topPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Título
+        JLabel titleLabel = new JLabel("Bem-vindo!");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(ColorPalette.TEXT);
-        headerPanel.add(titleLabel);
-        contentPane.add(headerPanel, BorderLayout.NORTH);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        topPanel.add(titleLabel);
+
+        contentPane.add(topPanel, BorderLayout.NORTH);
 
         // Painel do formulário
         JPanel formPanel = new JPanel();
@@ -59,22 +82,36 @@ public class LoginScreen extends JFrame {
         formPanel.add(passwordField);
         formPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 
+        // Painel para os botões
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        buttonPanel.setBackground(ColorPalette.BACKGROUND);
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         loginButton = createButton("Entrar");
-        formPanel.add(loginButton);
-        
+        buttonPanel.add(loginButton);
+
+        createAccountButton = createButton("Criar Acesso");
+        buttonPanel.add(createAccountButton);
+
+        formPanel.add(buttonPanel);
+
         contentPane.add(formPanel, BorderLayout.CENTER);
 
         // Rodapé
         JPanel footerPanel = new JPanel();
         footerPanel.setBackground(ColorPalette.BACKGROUND);
         footerPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
-        JLabel footerLabel = new JLabel("© 2024 PDV Posto de Combustível");
+        JLabel footerLabel = new JLabel("© 2025 PDV Posto de Combustível");
         footerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         footerLabel.setForeground(ColorPalette.TEXT_MUTED);
         footerPanel.add(footerLabel);
         contentPane.add(footerPanel, BorderLayout.SOUTH);
 
         loginButton.addActionListener(e -> authenticateUser());
+
+        createAccountButton.addActionListener(e -> {
+            new RegisterScreen().setVisible(true);
+        });
     }
 
     private void authenticateUser() {
@@ -104,7 +141,7 @@ public class LoginScreen extends JFrame {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Segoe UI", Font.BOLD, 14));
         label.setForeground(ColorPalette.TEXT);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
 
@@ -113,12 +150,13 @@ public class LoginScreen extends JFrame {
         textField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         textField.setBackground(ColorPalette.PANEL_BACKGROUND);
         textField.setForeground(ColorPalette.TEXT);
+        textField.setHorizontalAlignment(JTextField.CENTER);
         textField.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),
             new EmptyBorder(10, 10, 10, 10)
         ));
-        textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
-        textField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        textField.setMaximumSize(new Dimension(300, 45));
+        textField.setAlignmentX(Component.CENTER_ALIGNMENT);
         return textField;
     }
 
@@ -127,12 +165,13 @@ public class LoginScreen extends JFrame {
         passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         passwordField.setBackground(ColorPalette.PANEL_BACKGROUND);
         passwordField.setForeground(ColorPalette.TEXT);
+        passwordField.setHorizontalAlignment(JPasswordField.CENTER);
         passwordField.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),
             new EmptyBorder(10, 10, 10, 10)
         ));
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
-        passwordField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        passwordField.setMaximumSize(new Dimension(300, 45));
+        passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
         return passwordField;
     }
 
@@ -144,8 +183,6 @@ public class LoginScreen extends JFrame {
         button.setBackground(ColorPalette.PRIMARY);
         button.setForeground(ColorPalette.WHITE_TEXT);
         button.setBorder(new EmptyBorder(12, 20, 12, 20));
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
