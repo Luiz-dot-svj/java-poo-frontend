@@ -51,15 +51,36 @@ public class ProdutoScreen extends JFrame {
     }
 
     private JPanel createHeader(String title) {
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
-        headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        headerPanel.setPreferredSize(new Dimension(getWidth(), 80));
+
+        // Painel para logo e slogan
+        JPanel logoSloganPanel = new JPanel();
+        logoSloganPanel.setLayout(new BoxLayout(logoSloganPanel, BoxLayout.Y_AXIS));
+        logoSloganPanel.setOpaque(false);
+        logoSloganPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoSloganPanel.add(logoLabel);
+
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        logoSloganPanel.add(sloganLabel);
+
+        headerPanel.add(logoSloganPanel, BorderLayout.WEST);
+
+        // Título centralizado
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(ColorPalette.TEXT);
-        titleLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
-        headerPanel.add(titleLabel);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+
         return headerPanel;
     }
 
