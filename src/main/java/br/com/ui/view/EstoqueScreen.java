@@ -29,7 +29,8 @@ import java.util.Map;
 public class EstoqueScreen extends JFrame {
 
     private JTextField quantidadeField, localTanqueField, localEnderecoField, loteFabricacaoField, dataValidadeField, produtoField;
-    private JComboBox<TipoEstoque> tipoEstoqueComboBox;
+    private JRadioButton consumoRadioButton, vendasRadioButton;
+    private ButtonGroup tipoEstoqueGroup;
     private JButton selecionarProdutoButton;
     private ProdutoResponse produtoSelecionado;
     private JTable tabelaEstoque;
@@ -67,15 +68,36 @@ public class EstoqueScreen extends JFrame {
     }
 
     private JPanel createHeader(String title) {
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
-        headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        headerPanel.setPreferredSize(new Dimension(getWidth(), 80));
+
+        // Painel para logo e slogan
+        JPanel logoSloganPanel = new JPanel();
+        logoSloganPanel.setLayout(new BoxLayout(logoSloganPanel, BoxLayout.Y_AXIS));
+        logoSloganPanel.setOpaque(false);
+        logoSloganPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoSloganPanel.add(logoLabel);
+
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        logoSloganPanel.add(sloganLabel);
+
+        headerPanel.add(logoSloganPanel, BorderLayout.WEST);
+
+        // Título centralizado
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(ColorPalette.TEXT);
-        titleLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
-        headerPanel.add(titleLabel);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+
         return headerPanel;
     }
 
@@ -115,11 +137,29 @@ public class EstoqueScreen extends JFrame {
         formPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         formPanel.add(createLabel("Tipo de Estoque:"));
-        tipoEstoqueComboBox = new JComboBox<>(TipoEstoque.values());
-        tipoEstoqueComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tipoEstoqueComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        tipoEstoqueComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        formPanel.add(tipoEstoqueComboBox);
+        
+        consumoRadioButton = new JRadioButton("Consumo");
+        consumoRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        consumoRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        consumoRadioButton.setForeground(ColorPalette.TEXT);
+
+        vendasRadioButton = new JRadioButton("Vendas");
+        vendasRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        vendasRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        vendasRadioButton.setForeground(ColorPalette.TEXT);
+
+        tipoEstoqueGroup = new ButtonGroup();
+        tipoEstoqueGroup.add(consumoRadioButton);
+        tipoEstoqueGroup.add(vendasRadioButton);
+
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
+        radioPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
+        radioPanel.add(consumoRadioButton);
+        radioPanel.add(vendasRadioButton);
+        radioPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        formPanel.add(radioPanel);
         formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         formPanel.add(createButtonsPanel());
@@ -148,24 +188,24 @@ public class EstoqueScreen extends JFrame {
     }
 
     private JPanel createButtonsPanel() {
-        JPanel buttonsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, 10));
         buttonsPanel.setOpaque(false);
         buttonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
         JButton novoButton = createButton("Novo", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         novoButton.addActionListener(e -> limparCampos());
         buttonsPanel.add(novoButton);
 
-        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_SUCCESS, ColorPalette.WHITE_TEXT);
+        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         salvarButton.addActionListener(e -> salvarEstoque());
         buttonsPanel.add(salvarButton);
 
-        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_WARNING, ColorPalette.WHITE_TEXT);
+        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         editarButton.addActionListener(e -> editarEstoque());
         buttonsPanel.add(editarButton);
 
-        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_DANGER, ColorPalette.WHITE_TEXT);
+        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         excluirButton.addActionListener(e -> excluirEstoque());
         buttonsPanel.add(excluirButton);
 
@@ -257,13 +297,20 @@ public class EstoqueScreen extends JFrame {
             BigDecimal quantidade = new BigDecimal(quantidadeField.getText().replace(",", "."));
             LocalDate dataValidade = LocalDate.parse(dataValidadeField.getText(), dateFormatter);
 
+            TipoEstoque tipoEstoque = null;
+            if (consumoRadioButton.isSelected()) {
+                tipoEstoque = TipoEstoque.CONSUMO;
+            } else if (vendasRadioButton.isSelected()) {
+                tipoEstoque = TipoEstoque.VENDAS;
+            }
+
             EstoqueRequest request = new EstoqueRequest(
                     quantidade,
                     localTanqueField.getText(),
                     localEnderecoField.getText(),
                     loteFabricacaoField.getText(),
                     dataValidade,
-                    (TipoEstoque) tipoEstoqueComboBox.getSelectedItem(),
+                    tipoEstoque,
                     produtoSelecionado.id()
             );
 
@@ -301,7 +348,14 @@ public class EstoqueScreen extends JFrame {
             localEnderecoField.setText(estoque.localEndereco());
             loteFabricacaoField.setText(estoque.loteFabricacao());
             dataValidadeField.setText(estoque.dataValidade().format(dateFormatter));
-            tipoEstoqueComboBox.setSelectedItem(estoque.tipoEstoque());
+            
+            TipoEstoque tipoEstoque = estoque.tipoEstoque();
+            if (tipoEstoque == TipoEstoque.CONSUMO) {
+                consumoRadioButton.setSelected(true);
+            } else if (tipoEstoque == TipoEstoque.VENDAS) {
+                vendasRadioButton.setSelected(true);
+            }
+
             produtoSelecionado = produtosMap.get(estoque.produtoId());
             produtoField.setText(produtoSelecionado != null ? produtoSelecionado.nome() : "");
         } catch (ApiServiceException | IOException e) {
@@ -335,7 +389,7 @@ public class EstoqueScreen extends JFrame {
         localEnderecoField.setText("");
         loteFabricacaoField.setText("");
         dataValidadeField.setText("");
-        tipoEstoqueComboBox.setSelectedIndex(0);
+        tipoEstoqueGroup.clearSelection();
         produtoField.setText("");
         produtoSelecionado = null;
         tabelaEstoque.clearSelection();
@@ -358,7 +412,7 @@ public class EstoqueScreen extends JFrame {
     private JTextField createTextField() {
         JTextField textField = new JTextField();
         textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        textField.setBackground(ColorPalette.PANEL_BACKGROUND);
+        textField.setBackground(ColorPalette.ACCENT_INFO);
         textField.setForeground(ColorPalette.TEXT);
         textField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),

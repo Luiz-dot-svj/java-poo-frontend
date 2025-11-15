@@ -3,5 +3,5 @@ package br.com.acesso.enums;
 public enum TipoAcesso {
     ADMINISTRADOR,
     FUNCIONARIO,
-    GERENCIA
+    ADMIN, FRENTISTA, GERENTE, GERENCIA
 }

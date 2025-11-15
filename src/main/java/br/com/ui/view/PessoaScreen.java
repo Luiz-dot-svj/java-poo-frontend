@@ -24,7 +24,8 @@ import java.util.List;
 public class PessoaScreen extends JFrame {
 
     private JTextField nomeCompletoField, cpfCnpjField, numeroCtpsField, dataNascimentoField;
-    private JComboBox<TipoPessoa> tipoPessoaComboBox;
+    private JRadioButton fisicaRadioButton, juridicaRadioButton;
+    private ButtonGroup tipoPessoaGroup;
     private JTable tabelaPessoas;
     private DefaultTableModel tableModel;
     private Long pessoaIdEmEdicao;
@@ -44,7 +45,7 @@ public class PessoaScreen extends JFrame {
         contentPane.setBackground(ColorPalette.BACKGROUND);
         contentPane.setLayout(new BorderLayout(0, 0));
 
-        contentPane.add(createHeader("Gerenciamento de Pessoas (Clientes/Funcionários)"), BorderLayout.NORTH);
+        contentPane.add(createHeader("Gerenciamento de Pessoas"), BorderLayout.NORTH);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createFormPanel(), createTablePanel());
         splitPane.setDividerLocation(350);
@@ -55,15 +56,36 @@ public class PessoaScreen extends JFrame {
     }
 
     private JPanel createHeader(String title) {
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
-        headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        headerPanel.setPreferredSize(new Dimension(getWidth(), 80));
+
+        // Painel para logo e slogan
+        JPanel logoSloganPanel = new JPanel();
+        logoSloganPanel.setLayout(new BoxLayout(logoSloganPanel, BoxLayout.Y_AXIS));
+        logoSloganPanel.setOpaque(false);
+        logoSloganPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoSloganPanel.add(logoLabel);
+
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        logoSloganPanel.add(sloganLabel);
+
+        headerPanel.add(logoSloganPanel, BorderLayout.WEST);
+
+        // Título centralizado
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(ColorPalette.TEXT);
-        titleLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
-        headerPanel.add(titleLabel);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+
         return headerPanel;
     }
 
@@ -94,11 +116,29 @@ public class PessoaScreen extends JFrame {
         formPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         formPanel.add(createLabel("Tipo de Pessoa:"));
-        tipoPessoaComboBox = new JComboBox<>(TipoPessoa.values());
-        tipoPessoaComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tipoPessoaComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        tipoPessoaComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        formPanel.add(tipoPessoaComboBox);
+        
+        fisicaRadioButton = new JRadioButton("Física");
+        fisicaRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        fisicaRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        fisicaRadioButton.setForeground(ColorPalette.TEXT);
+
+        juridicaRadioButton = new JRadioButton("Jurídica");
+        juridicaRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        juridicaRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        juridicaRadioButton.setForeground(ColorPalette.TEXT);
+
+        tipoPessoaGroup = new ButtonGroup();
+        tipoPessoaGroup.add(fisicaRadioButton);
+        tipoPessoaGroup.add(juridicaRadioButton);
+
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
+        radioPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
+        radioPanel.add(fisicaRadioButton);
+        radioPanel.add(juridicaRadioButton);
+        radioPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        formPanel.add(radioPanel);
         formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         formPanel.add(createButtonsPanel());
@@ -108,24 +148,24 @@ public class PessoaScreen extends JFrame {
     }
 
     private JPanel createButtonsPanel() {
-        JPanel buttonsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, 5));
         buttonsPanel.setOpaque(false);
         buttonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
 
         JButton novoButton = createButton("Novo", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         novoButton.addActionListener(e -> limparCampos());
         buttonsPanel.add(novoButton);
 
-        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_SUCCESS, ColorPalette.WHITE_TEXT);
+        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         salvarButton.addActionListener(e -> salvarPessoa());
         buttonsPanel.add(salvarButton);
 
-        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_WARNING, ColorPalette.WHITE_TEXT);
+        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         editarButton.addActionListener(e -> editarPessoa());
         buttonsPanel.add(editarButton);
 
-        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_DANGER, ColorPalette.WHITE_TEXT);
+        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         excluirButton.addActionListener(e -> excluirPessoa());
         buttonsPanel.add(excluirButton);
 
@@ -187,12 +227,19 @@ public class PessoaScreen extends JFrame {
             LocalDate dataNascimento = dataNascimentoField.getText().isBlank() ? null : LocalDate.parse(dataNascimentoField.getText(), dateFormatter);
             Long numeroCtps = numeroCtpsField.getText().isBlank() ? null : Long.parseLong(numeroCtpsField.getText());
 
+            TipoPessoa tipoPessoa = null;
+            if (fisicaRadioButton.isSelected()) {
+                tipoPessoa = TipoPessoa.FISICA;
+            } else if (juridicaRadioButton.isSelected()) {
+                tipoPessoa = TipoPessoa.JURIDICA;
+            }
+
             PessoaRequest request = new PessoaRequest(
                     nomeCompletoField.getText(),
                     cpfCnpjField.getText(),
                     numeroCtps,
                     dataNascimento,
-                    (TipoPessoa) tipoPessoaComboBox.getSelectedItem()
+                    tipoPessoa
             );
 
             if (pessoaIdEmEdicao == null) {
@@ -226,7 +273,13 @@ public class PessoaScreen extends JFrame {
         cpfCnpjField.setText(tableModel.getValueAt(selectedRow, 2).toString());
         numeroCtpsField.setText(tableModel.getValueAt(selectedRow, 3) != null ? tableModel.getValueAt(selectedRow, 3).toString() : "");
         dataNascimentoField.setText(tableModel.getValueAt(selectedRow, 4) != null ? tableModel.getValueAt(selectedRow, 4).toString() : "");
-        tipoPessoaComboBox.setSelectedItem(tableModel.getValueAt(selectedRow, 5));
+        
+        TipoPessoa tipoPessoa = (TipoPessoa) tableModel.getValueAt(selectedRow, 5);
+        if (tipoPessoa == TipoPessoa.FISICA) {
+            fisicaRadioButton.setSelected(true);
+        } else if (tipoPessoa == TipoPessoa.JURIDICA) {
+            juridicaRadioButton.setSelected(true);
+        }
     }
 
     private void excluirPessoa() {
@@ -254,7 +307,7 @@ public class PessoaScreen extends JFrame {
         cpfCnpjField.setText("");
         numeroCtpsField.setText("");
         dataNascimentoField.setText("");
-        tipoPessoaComboBox.setSelectedIndex(0);
+        tipoPessoaGroup.clearSelection();
         tabelaPessoas.clearSelection();
         pessoaIdEmEdicao = null;
     }
@@ -275,7 +328,7 @@ public class PessoaScreen extends JFrame {
     private JTextField createTextField() {
         JTextField textField = new JTextField();
         textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        textField.setBackground(ColorPalette.PANEL_BACKGROUND);
+        textField.setBackground(ColorPalette.ACCENT_INFO);
         textField.setForeground(ColorPalette.TEXT);
         textField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),
@@ -288,12 +341,12 @@ public class PessoaScreen extends JFrame {
 
     private JButton createButton(String text, Color background, Color foreground) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setFocusPainted(false);
         button.setBackground(background);
         button.setForeground(foreground);
-        button.setBorder(new EmptyBorder(10, 20, 10, 20));
+        button.setBorder(new EmptyBorder(8, 15, 8, 15));
 
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {

@@ -43,7 +43,7 @@ public class AbastecimentoScreen extends JFrame {
         contentPane.add(headerPanel, BorderLayout.NORTH);
 
         // Painel de Bombas
-        pumpsPanel = new JPanel(new GridLayout(0, 3, 20, 20));
+        pumpsPanel = new JPanel(new GridLayout(0, 1, 20, 20));
         pumpsPanel.setOpaque(false);
         pumpsPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         JScrollPane scrollPane = new JScrollPane(pumpsPanel);
@@ -58,12 +58,31 @@ public class AbastecimentoScreen extends JFrame {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
-        headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        headerPanel.setPreferredSize(new Dimension(getWidth(), 80));
 
+        // Painel para logo e slogan
+        JPanel logoSloganPanel = new JPanel();
+        logoSloganPanel.setLayout(new BoxLayout(logoSloganPanel, BoxLayout.Y_AXIS));
+        logoSloganPanel.setOpaque(false);
+        logoSloganPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoSloganPanel.add(logoLabel);
+
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        logoSloganPanel.add(sloganLabel);
+
+        headerPanel.add(logoSloganPanel, BorderLayout.WEST);
+
+        // Título centralizado
         JLabel titleLabel = new JLabel("Central de Abastecimento");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(ColorPalette.TEXT);
-        titleLabel.setBorder(new EmptyBorder(0, 20, 0, 0));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
 
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -133,18 +152,20 @@ public class AbastecimentoScreen extends JFrame {
         ));
 
         // Título da Bomba
-        JLabel titleLabel = new JLabel(bomba.getNome(), SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        String pumpName = bomba.getNome();
+        if (pumpName != null && pumpName.matches("^B\\d+$")) {
+            pumpName = "Bomba" + pumpName.substring(1);
+        }
+        JLabel titleLabel = new JLabel(pumpName, SwingConstants.LEFT);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(ColorPalette.TEXT);
-        cardPanel.add(titleLabel, BorderLayout.NORTH);
+        cardPanel.add(titleLabel, BorderLayout.WEST);
 
         // Status da Bomba
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         statusPanel.setOpaque(false);
-        JLabel statusLabel = new JLabel("Status:");
-        statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         JLabel statusValue = new JLabel(bomba.getStatus());
-        statusValue.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        statusValue.setFont(new Font("Segoe UI", Font.BOLD, 24));
         
         Color statusColor;
         switch (bomba.getStatus()) {
@@ -160,7 +181,6 @@ public class AbastecimentoScreen extends JFrame {
         }
         statusValue.setForeground(statusColor);
         
-        statusPanel.add(statusLabel);
         statusPanel.add(statusValue);
         cardPanel.add(statusPanel, BorderLayout.CENTER);
 

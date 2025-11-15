@@ -21,7 +21,8 @@ import java.util.List;
 public class ProdutoScreen extends JFrame {
 
     private JTextField nomeField, referenciaField, fornecedorField, marcaField, categoriaField;
-    private JComboBox<TipoProduto> tipoProdutoComboBox;
+    private JRadioButton combustivelRadioButton, lubrificanteRadioButton;
+    private ButtonGroup tipoProdutoGroup;
     private JTable tabelaProdutos;
     private DefaultTableModel tableModel;
     private Long produtoIdEmEdicao;
@@ -116,11 +117,29 @@ public class ProdutoScreen extends JFrame {
         formPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         formPanel.add(createLabel("Tipo de Produto:"));
-        tipoProdutoComboBox = new JComboBox<>(TipoProduto.values());
-        tipoProdutoComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tipoProdutoComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        tipoProdutoComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        formPanel.add(tipoProdutoComboBox);
+        
+        combustivelRadioButton = new JRadioButton("Combustível");
+        combustivelRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        combustivelRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        combustivelRadioButton.setForeground(ColorPalette.TEXT);
+
+        lubrificanteRadioButton = new JRadioButton("Lubrificante");
+        lubrificanteRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lubrificanteRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        lubrificanteRadioButton.setForeground(ColorPalette.TEXT);
+
+        tipoProdutoGroup = new ButtonGroup();
+        tipoProdutoGroup.add(combustivelRadioButton);
+        tipoProdutoGroup.add(lubrificanteRadioButton);
+
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
+        radioPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
+        radioPanel.add(combustivelRadioButton);
+        radioPanel.add(lubrificanteRadioButton);
+        radioPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        formPanel.add(radioPanel);
         formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         formPanel.add(createButtonsPanel());
@@ -130,24 +149,24 @@ public class ProdutoScreen extends JFrame {
     }
 
     private JPanel createButtonsPanel() {
-        JPanel buttonsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, 5));
         buttonsPanel.setOpaque(false);
         buttonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
 
         JButton novoButton = createButton("Novo", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         novoButton.addActionListener(e -> limparCampos());
         buttonsPanel.add(novoButton);
 
-        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_SUCCESS, ColorPalette.WHITE_TEXT);
+        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         salvarButton.addActionListener(e -> salvarProduto());
         buttonsPanel.add(salvarButton);
 
-        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_WARNING, ColorPalette.WHITE_TEXT);
+        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         editarButton.addActionListener(e -> editarProduto());
         buttonsPanel.add(editarButton);
 
-        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_DANGER, ColorPalette.WHITE_TEXT);
+        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         excluirButton.addActionListener(e -> excluirProduto());
         buttonsPanel.add(excluirButton);
 
@@ -206,13 +225,20 @@ public class ProdutoScreen extends JFrame {
     }
 
     private void salvarProduto() {
+        TipoProduto tipoProduto = null;
+        if (combustivelRadioButton.isSelected()) {
+            tipoProduto = TipoProduto.COMBUSTIVEL;
+        } else if (lubrificanteRadioButton.isSelected()) {
+            tipoProduto = TipoProduto.LUBRIFICANTE;
+        }
+
         ProdutoRequest request = new ProdutoRequest(
                 nomeField.getText(),
                 referenciaField.getText(),
                 fornecedorField.getText(),
                 marcaField.getText(),
                 categoriaField.getText(),
-                (TipoProduto) tipoProdutoComboBox.getSelectedItem()
+                tipoProduto
         );
 
         try {
@@ -243,7 +269,13 @@ public class ProdutoScreen extends JFrame {
         fornecedorField.setText((String) tableModel.getValueAt(selectedRow, 3));
         marcaField.setText((String) tableModel.getValueAt(selectedRow, 4));
         categoriaField.setText((String) tableModel.getValueAt(selectedRow, 5));
-        tipoProdutoComboBox.setSelectedItem(tableModel.getValueAt(selectedRow, 6));
+        
+        TipoProduto tipoProduto = (TipoProduto) tableModel.getValueAt(selectedRow, 6);
+        if (tipoProduto == TipoProduto.COMBUSTIVEL) {
+            combustivelRadioButton.setSelected(true);
+        } else if (tipoProduto == TipoProduto.LUBRIFICANTE) {
+            lubrificanteRadioButton.setSelected(true);
+        }
     }
 
     private void excluirProduto() {
@@ -272,7 +304,7 @@ public class ProdutoScreen extends JFrame {
         fornecedorField.setText("");
         marcaField.setText("");
         categoriaField.setText("");
-        tipoProdutoComboBox.setSelectedIndex(0);
+        tipoProdutoGroup.clearSelection();
         tabelaProdutos.clearSelection();
         produtoIdEmEdicao = null;
     }
@@ -293,7 +325,7 @@ public class ProdutoScreen extends JFrame {
     private JTextField createTextField() {
         JTextField textField = new JTextField();
         textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        textField.setBackground(ColorPalette.PANEL_BACKGROUND);
+        textField.setBackground(ColorPalette.ACCENT_INFO);
         textField.setForeground(ColorPalette.TEXT);
         textField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),
@@ -306,12 +338,12 @@ public class ProdutoScreen extends JFrame {
 
     private JButton createButton(String text, Color background, Color foreground) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setFocusPainted(false);
         button.setBackground(background);
         button.setForeground(foreground);
-        button.setBorder(new EmptyBorder(10, 20, 10, 20));
+        button.setBorder(new EmptyBorder(8, 15, 8, 15));
 
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {

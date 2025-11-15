@@ -22,7 +22,8 @@ public class GerenciamentoAcessoScreen extends JFrame {
 
     private JTextField loginField;
     private JPasswordField passwordField;
-    private JComboBox<TipoAcesso> tipoAcessoComboBox;
+    private JRadioButton adminRadioButton, frentistaRadioButton, gerenteRadioButton; // Renomeado para clareza
+    private ButtonGroup tipoAcessoGroup;
     private JTable tabelaUsuarios;
     private DefaultTableModel tableModel;
     private Long acessoIdEmEdicao;
@@ -52,15 +53,36 @@ public class GerenciamentoAcessoScreen extends JFrame {
     }
 
     private JPanel createHeader(String title) {
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
-        headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        headerPanel.setPreferredSize(new Dimension(getWidth(), 80));
+
+        // Painel para logo e slogan
+        JPanel logoSloganPanel = new JPanel();
+        logoSloganPanel.setLayout(new BoxLayout(logoSloganPanel, BoxLayout.Y_AXIS));
+        logoSloganPanel.setOpaque(false);
+        logoSloganPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoSloganPanel.add(logoLabel);
+
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        logoSloganPanel.add(sloganLabel);
+
+        headerPanel.add(logoSloganPanel, BorderLayout.WEST);
+
+        // Título centralizado
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(ColorPalette.TEXT);
-        titleLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
-        headerPanel.add(titleLabel);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+
         return headerPanel;
     }
 
@@ -81,11 +103,36 @@ public class GerenciamentoAcessoScreen extends JFrame {
         formPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         formPanel.add(createLabel("Tipo de Acesso:"));
-        tipoAcessoComboBox = new JComboBox<>(TipoAcesso.values());
-        tipoAcessoComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tipoAcessoComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        tipoAcessoComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        formPanel.add(tipoAcessoComboBox);
+        
+        adminRadioButton = new JRadioButton("Administrador");
+        adminRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        adminRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        adminRadioButton.setForeground(ColorPalette.TEXT);
+
+        frentistaRadioButton = new JRadioButton("Frentista"); // Alterado de "Funcionário" para "Frentista"
+        frentistaRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        frentistaRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        frentistaRadioButton.setForeground(ColorPalette.TEXT);
+
+        gerenteRadioButton = new JRadioButton("Gerente"); // Alterado de "Gerencia" para "Gerente"
+        gerenteRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        gerenteRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        gerenteRadioButton.setForeground(ColorPalette.TEXT);
+
+        tipoAcessoGroup = new ButtonGroup();
+        tipoAcessoGroup.add(adminRadioButton);
+        tipoAcessoGroup.add(frentistaRadioButton);
+        tipoAcessoGroup.add(gerenteRadioButton);
+
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
+        radioPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
+        radioPanel.add(adminRadioButton);
+        radioPanel.add(frentistaRadioButton); // Usando o novo nome
+        radioPanel.add(gerenteRadioButton);   // Usando o novo nome
+        radioPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        formPanel.add(radioPanel);
         formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         formPanel.add(createButtonsPanel());
@@ -95,24 +142,24 @@ public class GerenciamentoAcessoScreen extends JFrame {
     }
 
     private JPanel createButtonsPanel() {
-        JPanel buttonsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, 5));
         buttonsPanel.setOpaque(false);
         buttonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
 
         JButton novoButton = createButton("Novo", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         novoButton.addActionListener(e -> limparCampos());
         buttonsPanel.add(novoButton);
 
-        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_SUCCESS, ColorPalette.WHITE_TEXT);
+        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         salvarButton.addActionListener(e -> salvarAcesso());
         buttonsPanel.add(salvarButton);
 
-        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_WARNING, ColorPalette.WHITE_TEXT);
+        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         editarButton.addActionListener(e -> editarAcesso());
         buttonsPanel.add(editarButton);
 
-        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_DANGER, ColorPalette.WHITE_TEXT);
+        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         excluirButton.addActionListener(e -> excluirAcesso());
         buttonsPanel.add(excluirButton);
 
@@ -165,7 +212,15 @@ public class GerenciamentoAcessoScreen extends JFrame {
     private void salvarAcesso() {
         String login = loginField.getText();
         String password = new String(passwordField.getPassword());
-        TipoAcesso tipoAcesso = (TipoAcesso) tipoAcessoComboBox.getSelectedItem();
+        
+        TipoAcesso tipoAcesso = null;
+        if (adminRadioButton.isSelected()) {
+            tipoAcesso = TipoAcesso.ADMIN;
+        } else if (frentistaRadioButton.isSelected()) { // Usando o novo nome
+            tipoAcesso = TipoAcesso.FRENTISTA;
+        } else if (gerenteRadioButton.isSelected()) {   // Usando o novo nome
+            tipoAcesso = TipoAcesso.GERENTE;
+        }
 
         if (login.isBlank() || (password.isBlank() && acessoIdEmEdicao == null)) {
             showErrorDialog("Validação", "Login e senha são obrigatórios para novos usuários.");
@@ -198,7 +253,15 @@ public class GerenciamentoAcessoScreen extends JFrame {
         acessoIdEmEdicao = (Long) tableModel.getValueAt(selectedRow, 0);
         loginField.setText(tableModel.getValueAt(selectedRow, 1).toString());
         passwordField.setText(""); // Senha não é preenchida por segurança
-        tipoAcessoComboBox.setSelectedItem(tableModel.getValueAt(selectedRow, 2));
+        
+        TipoAcesso tipoAcesso = (TipoAcesso) tableModel.getValueAt(selectedRow, 2);
+        if (tipoAcesso == TipoAcesso.ADMIN) {
+            adminRadioButton.setSelected(true);
+        } else if (tipoAcesso == TipoAcesso.FRENTISTA) {
+            frentistaRadioButton.setSelected(true); // Usando o novo nome
+        } else if (tipoAcesso == TipoAcesso.GERENTE) {
+            gerenteRadioButton.setSelected(true);   // Usando o novo nome
+        }
         
         JOptionPane.showMessageDialog(this, "Para alterar a senha, basta digitar a nova no campo 'Senha'.", "Edição de Senha", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -226,7 +289,7 @@ public class GerenciamentoAcessoScreen extends JFrame {
     private void limparCampos() {
         loginField.setText("");
         passwordField.setText("");
-        tipoAcessoComboBox.setSelectedIndex(0);
+        tipoAcessoGroup.clearSelection();
         tabelaUsuarios.clearSelection();
         acessoIdEmEdicao = null;
     }
@@ -247,7 +310,7 @@ public class GerenciamentoAcessoScreen extends JFrame {
     private JTextField createTextField() {
         JTextField textField = new JTextField();
         textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        textField.setBackground(ColorPalette.PANEL_BACKGROUND);
+        textField.setBackground(ColorPalette.ACCENT_INFO);
         textField.setForeground(ColorPalette.TEXT);
         textField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),
@@ -261,7 +324,7 @@ public class GerenciamentoAcessoScreen extends JFrame {
     private JPasswordField createPasswordField() {
         JPasswordField passwordField = new JPasswordField();
         passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        passwordField.setBackground(ColorPalette.PANEL_BACKGROUND);
+        passwordField.setBackground(ColorPalette.ACCENT_INFO);
         passwordField.setForeground(ColorPalette.TEXT);
         passwordField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),
@@ -274,12 +337,12 @@ public class GerenciamentoAcessoScreen extends JFrame {
 
     private JButton createButton(String text, Color background, Color foreground) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setFocusPainted(false);
         button.setBackground(background);
         button.setForeground(foreground);
-        button.setBorder(new EmptyBorder(10, 20, 10, 20));
+        button.setBorder(new EmptyBorder(8, 15, 8, 15));
 
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {

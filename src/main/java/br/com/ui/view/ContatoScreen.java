@@ -25,7 +25,8 @@ import java.util.Map;
 public class ContatoScreen extends JFrame {
 
     private JTextField telefoneField, emailField, enderecoField, pessoaField;
-    private JComboBox<TipoContato> tipoContatoComboBox;
+    private JRadioButton clienteRadioButton, fornecedorRadioButton, funcionarioRadioButton;
+    private ButtonGroup tipoContatoGroup;
     private JButton selecionarPessoaButton;
     private PessoaResponse pessoaSelecionada;
     private JTable tabelaContatos;
@@ -62,15 +63,36 @@ public class ContatoScreen extends JFrame {
     }
 
     private JPanel createHeader(String title) {
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorPalette.BORDER_COLOR));
-        headerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        headerPanel.setPreferredSize(new Dimension(getWidth(), 80));
+
+        // Painel para logo e slogan
+        JPanel logoSloganPanel = new JPanel();
+        logoSloganPanel.setLayout(new BoxLayout(logoSloganPanel, BoxLayout.Y_AXIS));
+        logoSloganPanel.setOpaque(false);
+        logoSloganPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        JLabel logoLabel = new JLabel("PDV");
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        logoLabel.setForeground(ColorPalette.PRIMARY);
+        logoSloganPanel.add(logoLabel);
+
+        JLabel sloganLabel = new JLabel("Qualidade no tanque, sorriso no rosto");
+        sloganLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        sloganLabel.setForeground(ColorPalette.TEXT_MUTED);
+        logoSloganPanel.add(sloganLabel);
+
+        headerPanel.add(logoSloganPanel, BorderLayout.WEST);
+
+        // Título centralizado
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(ColorPalette.TEXT);
-        titleLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
-        headerPanel.add(titleLabel);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+
         return headerPanel;
     }
 
@@ -100,11 +122,36 @@ public class ContatoScreen extends JFrame {
         formPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         formPanel.add(createLabel("Tipo de Contato:"));
-        tipoContatoComboBox = new JComboBox<>(TipoContato.values());
-        tipoContatoComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tipoContatoComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        tipoContatoComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        formPanel.add(tipoContatoComboBox);
+        
+        clienteRadioButton = new JRadioButton("Cliente");
+        clienteRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        clienteRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        clienteRadioButton.setForeground(ColorPalette.TEXT);
+
+        fornecedorRadioButton = new JRadioButton("Fornecedor");
+        fornecedorRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        fornecedorRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        fornecedorRadioButton.setForeground(ColorPalette.TEXT);
+
+        funcionarioRadioButton = new JRadioButton("Funcionário");
+        funcionarioRadioButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        funcionarioRadioButton.setBackground(ColorPalette.PANEL_BACKGROUND);
+        funcionarioRadioButton.setForeground(ColorPalette.TEXT);
+
+        tipoContatoGroup = new ButtonGroup();
+        tipoContatoGroup.add(clienteRadioButton);
+        tipoContatoGroup.add(fornecedorRadioButton);
+        tipoContatoGroup.add(funcionarioRadioButton);
+
+        JPanel radioPanel = new JPanel();
+        radioPanel.setLayout(new BoxLayout(radioPanel, BoxLayout.Y_AXIS));
+        radioPanel.setBackground(ColorPalette.PANEL_BACKGROUND);
+        radioPanel.add(clienteRadioButton);
+        radioPanel.add(fornecedorRadioButton);
+        radioPanel.add(funcionarioRadioButton);
+        radioPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        formPanel.add(radioPanel);
         formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         formPanel.add(createButtonsPanel());
@@ -133,24 +180,24 @@ public class ContatoScreen extends JFrame {
     }
 
     private JPanel createButtonsPanel() {
-        JPanel buttonsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel buttonsPanel = new JPanel(new GridLayout(4, 1, 0, 5));
         buttonsPanel.setOpaque(false);
         buttonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        buttonsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
 
         JButton novoButton = createButton("Novo", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         novoButton.addActionListener(e -> limparCampos());
         buttonsPanel.add(novoButton);
 
-        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_SUCCESS, ColorPalette.WHITE_TEXT);
+        JButton salvarButton = createButton("Salvar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         salvarButton.addActionListener(e -> salvarContato());
         buttonsPanel.add(salvarButton);
 
-        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_WARNING, ColorPalette.WHITE_TEXT);
+        JButton editarButton = createButton("Editar", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         editarButton.addActionListener(e -> editarContato());
         buttonsPanel.add(editarButton);
 
-        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_DANGER, ColorPalette.WHITE_TEXT);
+        JButton excluirButton = createButton("Excluir", ColorPalette.ACCENT_INFO, ColorPalette.WHITE_TEXT);
         excluirButton.addActionListener(e -> excluirContato());
         buttonsPanel.add(excluirButton);
 
@@ -237,11 +284,21 @@ public class ContatoScreen extends JFrame {
                 showErrorDialog("Validação", "É necessário selecionar uma pessoa.");
                 return;
             }
+
+            TipoContato tipoContato = null;
+            if (clienteRadioButton.isSelected()) {
+                tipoContato = TipoContato.CLIENTE;
+            } else if (fornecedorRadioButton.isSelected()) {
+                tipoContato = TipoContato.FORNECEDOR;
+            } else if (funcionarioRadioButton.isSelected()) {
+                tipoContato = TipoContato.FUNCIONARIO;
+            }
+
             ContatoRequest request = new ContatoRequest(
                     telefoneField.getText(),
                     emailField.getText(),
                     enderecoField.getText(),
-                    (TipoContato) tipoContatoComboBox.getSelectedItem(),
+                    tipoContato,
                     pessoaSelecionada.id()
             );
 
@@ -273,7 +330,16 @@ public class ContatoScreen extends JFrame {
             telefoneField.setText(contato.telefone());
             emailField.setText(contato.email());
             enderecoField.setText(contato.endereco());
-            tipoContatoComboBox.setSelectedItem(contato.tipoContato());
+            
+            TipoContato tipoContato = contato.tipoContato();
+            if (tipoContato == TipoContato.CLIENTE) {
+                clienteRadioButton.setSelected(true);
+            } else if (tipoContato == TipoContato.FORNECEDOR) {
+                fornecedorRadioButton.setSelected(true);
+            } else if (tipoContato == TipoContato.FUNCIONARIO) {
+                funcionarioRadioButton.setSelected(true);
+            }
+
             pessoaSelecionada = pessoasMap.get(contato.pessoaId());
             pessoaField.setText(pessoaSelecionada != null ? pessoaSelecionada.nomeCompleto() : "");
         } catch (ApiServiceException | IOException e) {
@@ -305,7 +371,7 @@ public class ContatoScreen extends JFrame {
         telefoneField.setText("");
         emailField.setText("");
         enderecoField.setText("");
-        tipoContatoComboBox.setSelectedIndex(0);
+        tipoContatoGroup.clearSelection();
         pessoaField.setText("");
         pessoaSelecionada = null;
         tabelaContatos.clearSelection();
@@ -328,7 +394,7 @@ public class ContatoScreen extends JFrame {
     private JTextField createTextField() {
         JTextField textField = new JTextField();
         textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        textField.setBackground(ColorPalette.PANEL_BACKGROUND);
+        textField.setBackground(ColorPalette.ACCENT_INFO);
         textField.setForeground(ColorPalette.TEXT);
         textField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 1, 1, 1, ColorPalette.BORDER_COLOR),
@@ -341,12 +407,12 @@ public class ContatoScreen extends JFrame {
 
     private JButton createButton(String text, Color background, Color foreground) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setFocusPainted(false);
         button.setBackground(background);
         button.setForeground(foreground);
-        button.setBorder(new EmptyBorder(10, 20, 10, 20));
+        button.setBorder(new EmptyBorder(8, 15, 8, 15));
 
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
